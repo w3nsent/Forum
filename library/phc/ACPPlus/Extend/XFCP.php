@@ -1,0 +1,62 @@
+<?php
+
+class XFCP_phc_ACPPlus_Extend_XenForo_ControllerAdmin_AddOn extends XenForo_ControllerAdmin_AddOn {}
+
+class XFCP_phc_ACPPlus_Extend_XenForo_Model_AddOn extends XenForo_Model_AddOn {}
+
+class XFCP_phc_ACPPlus_Extend_XenForo_ControllerAdmin_Home extends XenForo_ControllerAdmin_Home {}
+
+class XFCP_phc_ACPPlus_Extend_XenForo_ControllerAdmin_Log extends XenForo_ControllerAdmin_Log {}
+
+class XFCP_phc_ACPPlus_Extend_XenForo_ControllerAdmin_User extends XenForo_ControllerAdmin_User {}
+
+class XFCP_phc_ACPPlus_Extend_XenForo_ControllerAdmin_Error extends XenForo_ControllerAdmin_Error {}
+
+class XFCP_phc_ACPPlus_Extend_XenForo_ControllerAdmin_TemplateModification extends XenForo_ControllerAdmin_TemplateModification {}
+
+class XFCP_phc_ACPPlus_Extend_XenForo_ControllerAdmin_Development extends XenForo_ControllerAdmin_Development {}
+
+class XFCP_phc_ACPPlus_Extend_XenForo_ControllerAdmin_Banning extends XenForo_ControllerAdmin_Banning {}
+
+class XFCP_phc_ACPPlus_Extend_XenForo_ControllerPublic_Online extends XenForo_ControllerPublic_Online {}
+
+class XFCP_phc_ACPPlus_Extend_XenForo_ControllerPublic_Misc extends XenForo_ControllerPublic_Misc {}
+
+class XFCP_phc_ACPPlus_Extend_XenForo_ControllerAdmin_Tools extends XenForo_ControllerAdmin_Tools {}
+
+class XFCP_phc_ACPPlus_Extend_XenForo_ControllerPublic_Error extends XenForo_ControllerPublic_Error {}
+
+class XFCP_phc_ACPPlus_Extend_XenForo_ControllerAdmin_Template extends XenForo_ControllerAdmin_Template {}
+
+class XFCP_phc_ACPPlus_Extend_XenForo_ControllerAdmin_Style extends XenForo_ControllerAdmin_Style {}
+
+class XFCP_phc_ACPPlus_Extend_XenForo_Model_Template extends XenForo_Model_Template {}
+
+class XFCP_phc_ACPPlus_Extend_XenForo_ControllerAdmin_AdminTemplate extends XenForo_ControllerAdmin_AdminTemplate {}
+
+class XFCP_phc_ACPPlus_Extend_XenForo_Model_AdminTemplate extends XenForo_Model_AdminTemplate {}
+
+class XFCP_phc_ACPPlus_Extend_XenForo_ControllerAdmin_Language extends XenForo_ControllerAdmin_Language {}
+
+class XFCP_phc_ACPPlus_Extend_XenForo_Model_Phrase extends XenForo_Model_Phrase {}
+
+class XFCP_phc_ACPPlus_Extend_XenForo_ControllerAdmin_Option extends XenForo_ControllerAdmin_Option {}
+
+class XFCP_phc_ACPPlus_Extend_XenForo_ControllerAdmin_Login extends XenForo_ControllerAdmin_Login {}
+
+class XFCP_phc_ACPPlus_Extend_XenForo_ControllerPublic_Login extends XenForo_ControllerPublic_Login {}
+
+class XFCP_phc_ACPPlus_Extend_XenForo_Model_AdminNavigation extends XenForo_Model_AdminNavigation {}
+
+class XFCP_phc_ACPPlus_Extend_XenForo_ControllerPublic_Thread extends XenForo_ControllerPublic_Thread {}
+
+class XFCP_phc_ACPPlus_Extend_XenForo_DataWriter_OptionGroup extends XenForo_DataWriter_OptionGroup {}
+
+class XFCP_phc_ACPPlus_Extend_XenForo_Model_Option extends XenForo_Model_Option {}
+
+class XFCP_phc_ACPPlus_Extend_XenForo_ViewAdmin_AddOn_Upgrade extends XenForo_ViewAdmin_AddOn_Upgrade {}
+
+class XFCP_phc_ACPPlus_Extend_XenForo_ControllerAdmin_Thread extends XenForo_ControllerAdmin_Thread {}
+
+class XFCP_phc_ACPPlus_Extend_XenForo_ControllerAdmin_Phrase extends XenForo_ControllerAdmin_Phrase {}
+

@@ -1,0 +1,700 @@
+<?xml version="1.0" encoding="utf-8"?>
+<addon addon_id="VietXfAdvStats" title="VXF - Advanced Forum Statistics" version_string="1.6.0" version_id="160" url="http://vxf.vn" install_callback_class="" install_callback_method="" uninstall_callback_class="" uninstall_callback_method="">
+  <admin_navigation/>
+  <admin_permissions/>
+  <admin_style_properties/>
+  <admin_templates>
+    <template title="VietXfAdvStats.css"><![CDATA[.xenForm .ctrlUnit dd input.VietXfAdvStats_OptionSectionsTitle,
+.xenForm .ctrlUnit dd select.VietXfAdvStats_OptionSectionsSelect,
+.xenForm .ctrlUnit dd span.VietXfAdvStats_OptionSections_ForumSelect select {
+	width: 150px;
+}]]></template>
+    <template title="VietXfAdvStats_option_numbers"><![CDATA[<xen:require js="js/VietXfAdvStats/backend.js" />
+
+<xen:controlunit label="{$preparedOption.title}" hint="{$preparedOption.hint}">
+	<xen:explain>{xen:raw $preparedOption.explain}</xen:explain>
+	<xen:html>
+		<ul>
+			<xen:foreach loop="$numbers" key="$counter" value="$number">
+			<li>
+				<xen:textbox 
+					name="{$fieldPrefix}[{$preparedOption.option_id}][{$counter}]"
+					value="{$number}"
+					/>
+			</li>
+			</xen:foreach>
+		
+			<li class="VietXfAdvStats_OptionNumbersListener">
+				<xen:textbox 
+					name="{$fieldPrefix}[{$preparedOption.option_id}][{$nextCounter}]"
+					value=""
+					/>
+			</li>
+		</ul>
+		
+		<input type="hidden" name="{$listedFieldName}" value="{$preparedOption.option_id}" />
+		{xen:raw $editLink}
+	</xen:html>
+</xen:controlunit>]]></template>
+    <template title="VietXfAdvStats_option_sections"><![CDATA[<xen:controlunit label="{$preparedOption.title}" hint="{$preparedOption.hint}">
+	<xen:explain>{xen:raw $preparedOption.explain}</xen:explain>
+	<xen:html>
+		<ul>
+			<xen:if is="{$configured}">
+				<xen:foreach loop="$configured" key="$counter" value="$section">
+				<li>
+					<xen:include template="VietXfAdvStats_option_sections_single" />
+				</li>
+				</xen:foreach>
+			</xen:if>
+			<li class="VietXfAdvStats_OptionSectionsListener">
+				<div class="VietXfAdvStats_OptionSectionsSingle">
+					<xen:textbox 
+						name="{$fieldPrefix}[{$preparedOption.option_id}][{$nextCounter}][title]"
+						placeholder="{xen:phrase VietXfAdvStats_section_title} ({xen:phrase optional})"
+						inputclass="VietXfAdvStats_OptionSectionsTitle"
+						/>
+					<xen:select name="{$fieldPrefix}[{$preparedOption.option_id}][{$nextCounter}][type]" inputclass="VietXfAdvStats_OptionSectionsSelect">
+						<xen:option value="">{xen:phrase VietXfAdvStats_not_used}</xen:option>
+						<xen:options source="{$availableSections}" />
+					</xen:select>
+					<span class="VietXfAdvStats_OptionSections_ForumSelect" style="width:100%">
+						<xen:select name="{$fieldPrefix}[{$preparedOption.option_id}][{$nextCounter}][forum_id]" multiple="true">
+							<xen:options source="{$forums}" />
+						</xen:select>
+					</span>
+				</div>
+			</li>
+		</ul>
+		
+		<input type="hidden" name="{$listedFieldName}" value="{$preparedOption.option_id}" />
+		{xen:raw $editLink}
+	</xen:html>
+</xen:controlunit>]]></template>
+    <template title="VietXfAdvStats_option_sections_single"><![CDATA[<xen:require js="js/VietXfAdvStats/backend.js" />
+<xen:require css="VietXfAdvStats.css" />
+
+<div class="VietXfAdvStats_OptionSectionsSingle">
+	<xen:textbox 
+		name="{$fieldPrefix}[{$preparedOption.option_id}][{$counter}][title]"
+		value="{xen:if '{$section.title}','{$section.title}'}"
+		placeholder="{xen:phrase VietXfAdvStats_section_title} ({xen:phrase optional})"
+		inputclass="VietXfAdvStats_OptionSectionsTitle"
+		/>
+	<xen:select name="{$fieldPrefix}[{$preparedOption.option_id}][{$counter}][type]" value="{xen:if '{$section.type}','{$section.type}'}" inputclass="VietXfAdvStats_OptionSectionsSelect">
+		<xen:option value="">{xen:phrase VietXfAdvStats_not_used}</xen:option>
+		<xen:options source="{$availableSections}" />
+	</xen:select>
+	<span class="VietXfAdvStats_OptionSections_ForumSelect" style="width:100%">
+	<xen:if is="{$section.forums}">
+		<xen:select name="{$fieldPrefix}[{$preparedOption.option_id}][{$counter}][forum_id]" multiple="true">
+			<xen:options source="{$section.forums}" />
+		</xen:select>
+	<xen:else/>
+		<xen:select name="{$fieldPrefix}[{$preparedOption.option_id}][{$counter}][forum_id]" value="{xen:if $section.forum_id,$section.forum_id}" multiple="true">
+			<xen:options source="{$forums}" />
+		</xen:select>
+	</xen:if>
+	</span>
+</div>]]></template>
+  </admin_templates>
+  <code_events/>
+  <code_event_listeners>
+    <listener event_id="load_class_model" execute_order="10" callback_class="VietXfAdvStats_Listener" callback_method="load_class" active="1" description=""/>
+    <listener event_id="template_create" execute_order="10" callback_class="VietXfAdvStats_Listener" callback_method="template_create" active="1" description=""/>
+    <listener event_id="template_hook" execute_order="10" callback_class="VietXfAdvStats_Listener" callback_method="template_hook" active="1" description=""/>
+    <listener event_id="template_post_render" execute_order="10" callback_class="VietXfAdvStats_Listener" callback_method="template_post_render" active="1" description=""/>
+  </code_event_listeners>
+  <cron/>
+  <email_templates/>
+  <optiongroups>
+    <group group_id="VietXfAdvStats" display_order="9999" debug_only="0"/>
+    <option option_id="Excep_id" edit_format="textbox" data_type="string" can_backup="1">
+      <default_value>0</default_value>
+      <edit_format_params></edit_format_params>
+      <sub_options></sub_options>
+      <relation group_id="VietXfAdvStats" display_order="1"/>
+    </option>
+    <option option_id="showPrefix" edit_format="onoff" data_type="boolean" can_backup="1">
+      <default_value>1</default_value>
+      <edit_format_params></edit_format_params>
+      <sub_options></sub_options>
+      <relation group_id="VietXfAdvStats" display_order="1"/>
+    </option>
+    <option option_id="showTooltip" edit_format="onoff" data_type="boolean" can_backup="1">
+      <default_value>1</default_value>
+      <edit_format_params></edit_format_params>
+      <sub_options></sub_options>
+      <relation group_id="VietXfAdvStats" display_order="1"/>
+    </option>
+    <option option_id="VietXfAdvStats_groups" edit_format="callback" data_type="array" can_backup="1">
+      <default_value>a:4:{i:0;s:1:"1";i:1;s:1:"2";i:2;s:1:"3";i:3;s:1:"4";}</default_value>
+      <edit_format_params>VietXfAdvStats_Option::renderOptionGroups</edit_format_params>
+      <sub_options>*</sub_options>
+      <relation group_id="VietXfAdvStats" display_order="1"/>
+    </option>
+    <option option_id="VietXfAdvStats_hotThreadCutOff" edit_format="spinbox" data_type="unsigned_integer" can_backup="1">
+      <default_value>30</default_value>
+      <edit_format_params></edit_format_params>
+      <sub_options></sub_options>
+      <relation group_id="VietXfAdvStats" display_order="130"/>
+    </option>
+    <option option_id="VietXfAdvStats_itemLimitsReal" edit_format="callback" data_type="array" can_backup="1" validation_class="VietXfAdvStats_Option" validation_method="verifyOptionNumbers">
+      <default_value>a:3:{i:0;s:2:"10";i:1;s:2:"20";i:2;s:2:"30";}</default_value>
+      <edit_format_params>VietXfAdvStats_Option::renderOptionNumbers</edit_format_params>
+      <sub_options>*</sub_options>
+      <relation group_id="VietXfAdvStats" display_order="210"/>
+    </option>
+    <option option_id="VietXfAdvStats_portal" edit_format="onoff" data_type="boolean" can_backup="1">
+      <default_value>1</default_value>
+      <edit_format_params></edit_format_params>
+      <sub_options></sub_options>
+      <relation group_id="VietXfAdvStats" display_order="240"/>
+    </option>
+    <option option_id="VietXfAdvStats_position" edit_format="select" data_type="string" can_backup="1">
+      <default_value>forum_list_nodes_above</default_value>
+      <edit_format_params>other = {xen:phrase VietXfAdvStats_position_other}
+page_container_content_top = {xen:phrase VietXfAdvStats_position_page_container_content_top}
+page_container_content_title_bar_below = {xen:phrase VietXfAdvStats_position_page_container_content_title_bar_below}
+forum_list_nodes_above = {xen:phrase VietXfAdvStats_position_forum_list_nodes_above}
+forum_list_nodes_below = {xen:phrase VietXfAdvStats_position_forum_list_nodes_below}</edit_format_params>
+      <sub_options></sub_options>
+      <relation group_id="VietXfAdvStats" display_order="230"/>
+    </option>
+    <option option_id="VietXfAdvStats_sections1st" edit_format="callback" data_type="array" can_backup="1" validation_class="VietXfAdvStats_Option" validation_method="verifyOptionSections">
+      <default_value>a:4:{i:0;a:1:{s:4:"type";s:9:"users_new";}i:1;a:1:{s:4:"type";s:17:"users_top_posters";}i:2;a:1:{s:4:"type";s:23:"users_top_trophy_points";}i:3;a:1:{s:4:"type";s:15:"users_top_liked";}}</default_value>
+      <edit_format_params>VietXfAdvStats_Option::renderOptionSections1st</edit_format_params>
+      <sub_options>*</sub_options>
+      <relation group_id="VietXfAdvStats" display_order="110"/>
+    </option>
+    <option option_id="VietXfAdvStats_sections2nd" edit_format="callback" data_type="array" can_backup="1" validation_class="VietXfAdvStats_Option" validation_method="verifyOptionSections">
+      <default_value>a:3:{i:0;a:1:{s:4:"type";s:14:"threads_recent";}i:1;a:1:{s:4:"type";s:14:"threads_latest";}i:2;a:1:{s:4:"type";s:11:"threads_hot";}}</default_value>
+      <edit_format_params>VietXfAdvStats_Option::renderOptionSections2nd</edit_format_params>
+      <sub_options>*</sub_options>
+      <relation group_id="VietXfAdvStats" display_order="120"/>
+    </option>
+    <option option_id="VietXfAdvStats_updateIntervalsReal" edit_format="callback" data_type="array" can_backup="1" validation_class="VietXfAdvStats_Option" validation_method="verifyOptionNumbers">
+      <default_value>a:1:{i:0;s:2:"60";}</default_value>
+      <edit_format_params>VietXfAdvStats_Option::renderOptionNumbers</edit_format_params>
+      <sub_options>*</sub_options>
+      <relation group_id="VietXfAdvStats" display_order="220"/>
+    </option>
+  </optiongroups>
+  <permissions>
+    <permission_groups/>
+    <permissions/>
+    <interface_groups/>
+  </permissions>
+  <phrases>
+    <phrase title="option_Excep_id" version_id="2" version_string="1.2.0"><![CDATA[Exclude Forums]]></phrase>
+    <phrase title="option_Excep_id_explain" version_id="2" version_string="1.2.0"><![CDATA[Forums excluded from stats List IDs, separate with commas]]></phrase>
+    <phrase title="option_group_VietXfAdvStats" version_id="1" version_string="1.01"><![CDATA[VXF - Advanced Forum Statistics]]></phrase>
+    <phrase title="option_group_VietXfAdvStats_description" version_id="1" version_string="1.01"><![CDATA[]]></phrase>
+    <phrase title="option_showPrefix" version_id="2" version_string="1.1.0"><![CDATA[Display Thread Prefix]]></phrase>
+    <phrase title="option_showPrefix_explain" version_id="2" version_string="1.1.0"><![CDATA[Enable/disable thread prefix]]></phrase>
+    <phrase title="option_showTooltip" version_id="2" version_string="1.1.0"><![CDATA[Display Tooltip]]></phrase>
+    <phrase title="option_showTooltip_explain" version_id="2" version_string="1.1.0"><![CDATA[enable/disable Tooltip Preview]]></phrase>
+    <phrase title="option_VietXfAdvStats_groups" version_id="2" version_string="1.1.0"><![CDATA[Display for Usergroup]]></phrase>
+    <phrase title="option_VietXfAdvStats_groups_explain" version_id="2" version_string="1.1.0"><![CDATA[Select which groups can see statistics]]></phrase>
+    <phrase title="option_VietXfAdvStats_hotThreadCutOff" version_id="1" version_string="1.01"><![CDATA[Hot Thread Cut Off]]></phrase>
+    <phrase title="option_VietXfAdvStats_hotThreadCutOff_explain" version_id="1" version_string="1.01"><![CDATA[Enter the number of days to cut off the list of hot threads. Any threads which are older that this number of days (calculate by the first post date) won't make it to the hot threads list no matter how many views conducted. If you want to include all threads, set this option to 0 (zero), not recommended.]]></phrase>
+    <phrase title="option_VietXfAdvStats_itemLimitsReal" version_id="1" version_string="1.01"><![CDATA[Item Limits]]></phrase>
+    <phrase title="option_VietXfAdvStats_itemLimitsReal_explain" version_id="1" version_string="1.01"><![CDATA[Specify the list of item limits for member to choose. The first one will be the default value. Don't worry about the order, they will be auto-arranged.]]></phrase>
+    <phrase title="option_VietXfAdvStats_portal" version_id="2" version_string="1.2.0"><![CDATA[Display on Portal (Xenporta)]]></phrase>
+    <phrase title="option_VietXfAdvStats_portal_explain" version_id="2" version_string="1.2.0"><![CDATA[Enable/disable display forum statistics for Xenporta]]></phrase>
+    <phrase title="option_VietXfAdvStats_position" version_id="1" version_string="1.01"><![CDATA[Position]]></phrase>
+    <phrase title="option_VietXfAdvStats_position_explain" version_id="1" version_string="1.01"><![CDATA[Select the position you want to display VietXF - Advanced Forum Statistics. If you want to display in other position or in different pages from forum_list, you will have to select Other position and edit the template yourself adding this snippet: &lt;xen:hook name="vietxf_advanced_forum_statistics" /&gt;]]></phrase>
+    <phrase title="option_VietXfAdvStats_sections1st" version_id="1" version_string="1.01"><![CDATA[Sections (#1)]]></phrase>
+    <phrase title="option_VietXfAdvStats_sections1st_explain" version_id="1" version_string="1.01"><![CDATA[Select the sections for the first block.]]></phrase>
+    <phrase title="option_VietXfAdvStats_sections2nd" version_id="1" version_string="1.01"><![CDATA[Sections (#2)]]></phrase>
+    <phrase title="option_VietXfAdvStats_sections2nd_explain" version_id="1" version_string="1.01"><![CDATA[Select the sections for the second block.]]></phrase>
+    <phrase title="option_VietXfAdvStats_updateIntervalsReal" version_id="1" version_string="1.01"><![CDATA[Update Intervals]]></phrase>
+    <phrase title="option_VietXfAdvStats_updateIntervalsReal_explain" version_id="1" version_string="1.01"><![CDATA[Specify the list of update intervals for member to choose. The first one will be the default value. Don't worry about the order, they will be auto-arranged.]]></phrase>
+    <phrase title="style_property_group_VietXfAdvStats_master" version_id="1" version_string="1.01"><![CDATA[VietXF - Advanced Forum Statistics]]></phrase>
+    <phrase title="style_property_group_VietXfAdvStats_master_desc" version_id="1" version_string="1.01"><![CDATA[]]></phrase>
+    <phrase title="style_property_VietXfAdvStats_Block1stWidth_description_master" version_id="1" version_string="1.01"><![CDATA[]]></phrase>
+    <phrase title="style_property_VietXfAdvStats_Block1stWidth_master" version_id="1" version_string="1.01"><![CDATA[First Block's Width]]></phrase>
+    <phrase title="style_property_VietXfAdvStats_SectionItemInfoCss_description_master" version_id="1" version_string="1.01"><![CDATA[]]></phrase>
+    <phrase title="style_property_VietXfAdvStats_SectionItemInfoCss_master" version_id="1" version_string="1.01"><![CDATA[Item Info]]></phrase>
+    <phrase title="style_property_VietXfAdvStats_SectionItemTitleCss_description_master" version_id="1" version_string="1.01"><![CDATA[]]></phrase>
+    <phrase title="style_property_VietXfAdvStats_SectionItemTitleCss_master" version_id="1" version_string="1.01"><![CDATA[Item Title]]></phrase>
+    <phrase title="style_property_VietXfAdvStats_ThreadInfoUserNameChars_description_master" version_id="1" version_string="1.01"><![CDATA[Sometimes thread info will display username of a user. You can specify the maximum number of characters for username here. It will be truncated if the name is longer that this value. You can use 0 to disable this feature.]]></phrase>
+    <phrase title="style_property_VietXfAdvStats_ThreadInfoUserNameChars_master" version_id="1" version_string="1.01"><![CDATA[Username's Characters]]></phrase>
+    <phrase title="style_property_VietXfAdvStats_ThreadInfoWidth_description_master" version_id="1" version_string="1.01"><![CDATA[Thread Info column will contain different data depends on the type of the section. You can use 0 to let the width grow as much as possible.]]></phrase>
+    <phrase title="style_property_VietXfAdvStats_ThreadInfoWidth_master" version_id="1" version_string="1.01"><![CDATA[Thread Info's Width]]></phrase>
+    <phrase title="style_property_VietXfAdvStats_ThreadTitleChars_description_master" version_id="1" version_string="1.01"><![CDATA[Specify the maximum number of characters for thread title. It will be truncated if the title is longer that this value. You can use 0 to disable this feature.]]></phrase>
+    <phrase title="style_property_VietXfAdvStats_ThreadTitleChars_master" version_id="1" version_string="1.01"><![CDATA[Thread Title's Characters]]></phrase>
+    <phrase title="style_property_VietXfAdvStats_ThreadTitleWidth_description_master" version_id="1" version_string="1.01"><![CDATA[You can use 0 to let the width grow as much as possible.]]></phrase>
+    <phrase title="style_property_VietXfAdvStats_ThreadTitleWidth_master" version_id="1" version_string="1.01"><![CDATA[Thread Title's Width]]></phrase>
+    <phrase title="style_property_VietXfAdvStats_UserInfoWidth_description_master" version_id="1" version_string="1.01"><![CDATA[User Info column will contain different data depends on the type of the section. You can use 0 to let the width grow as much as possible.]]></phrase>
+    <phrase title="style_property_VietXfAdvStats_UserInfoWidth_master" version_id="1" version_string="1.01"><![CDATA[User Info's Width]]></phrase>
+    <phrase title="style_property_VietXfAdvStats_UserNameChars_description_master" version_id="1" version_string="1.01"><![CDATA[Specify the maximum number of characters for username. It will be truncated if the name is longer that this value. You can use 0 to disable this feature.]]></phrase>
+    <phrase title="style_property_VietXfAdvStats_UserNameChars_master" version_id="1" version_string="1.01"><![CDATA[Username's Characters]]></phrase>
+    <phrase title="style_property_VietXfAdvStats_UserNameWidth_description_master" version_id="1" version_string="1.01"><![CDATA[You can use 0 to let the width grow as much as possible.]]></phrase>
+    <phrase title="style_property_VietXfAdvStats_UserNameWidth_master" version_id="1" version_string="1.01"><![CDATA[Username's Width]]></phrase>
+    <phrase title="VietXfAdvStats" version_id="1" version_string="1.01"><![CDATA[VietXF - Advanced Forum Statistics]]></phrase>
+    <phrase title="VietXfAdvStats_item_limit" version_id="1" version_string="1.01"><![CDATA[Item Limit]]></phrase>
+    <phrase title="VietXfAdvStats_lowercase_message" version_id="1" version_string="1.01"><![CDATA[message]]></phrase>
+    <phrase title="VietXfAdvStats_lowercase_messages" version_id="1" version_string="1.01"><![CDATA[messages]]></phrase>
+    <phrase title="VietXfAdvStats_lowercase_point" version_id="1" version_string="1.01"><![CDATA[point]]></phrase>
+    <phrase title="VietXfAdvStats_lowercase_points" version_id="1" version_string="1.01"><![CDATA[points]]></phrase>
+    <phrase title="VietXfAdvStats_lowercase_time" version_id="1" version_string="1.01"><![CDATA[time]]></phrase>
+    <phrase title="VietXfAdvStats_lowercase_times" version_id="1" version_string="1.01"><![CDATA[times]]></phrase>
+    <phrase title="VietXfAdvStats_lowercase_view" version_id="1" version_string="1.01"><![CDATA[view]]></phrase>
+    <phrase title="VietXfAdvStats_lowercase_views" version_id="1" version_string="1.01"><![CDATA[views]]></phrase>
+    <phrase title="VietXfAdvStats_not_used" version_id="1" version_string="1.01"><![CDATA[Not Used]]></phrase>
+    <phrase title="VietXfAdvStats_position_all" version_id="2" version_string="1.1.0"><![CDATA[All]]></phrase>
+    <phrase title="VietXfAdvStats_position_forum_list_nodes_above" version_id="1" version_string="1.01"><![CDATA[Above list of nodes]]></phrase>
+    <phrase title="VietXfAdvStats_position_forum_list_nodes_below" version_id="1" version_string="1.01"><![CDATA[Below list of nodes]]></phrase>
+    <phrase title="VietXfAdvStats_position_other" version_id="2" version_string="1.2.0"><![CDATA[Other]]></phrase>
+    <phrase title="VietXfAdvStats_position_page_container_content_title_bar_below" version_id="1" version_string="1.01"><![CDATA[Below page title]]></phrase>
+    <phrase title="VietXfAdvStats_position_page_container_content_top" version_id="1" version_string="1.01"><![CDATA[Top of the page]]></phrase>
+    <phrase title="VietXfAdvStats_section_threads_hot" version_id="1" version_string="1.01"><![CDATA[Hot Threads]]></phrase>
+    <phrase title="VietXfAdvStats_section_threads_latest" version_id="1" version_string="1.01"><![CDATA[Latest Threads]]></phrase>
+    <phrase title="VietXfAdvStats_section_threads_latest_custom_forum" version_id="1" version_string="1.01"><![CDATA[Latest Threads (custom)]]></phrase>
+    <phrase title="VietXfAdvStats_section_threads_random" version_id="2" version_string="1.2.0"><![CDATA[Random Threads]]></phrase>
+    <phrase title="VietXfAdvStats_section_threads_recent" version_id="1" version_string="1.01"><![CDATA[Recent Threads]]></phrase>
+    <phrase title="VietXfAdvStats_section_threads_recent_custom_forum" version_id="1" version_string="1.01"><![CDATA[Recent Threads (custom)]]></phrase>
+    <phrase title="VietXfAdvStats_section_title" version_id="1" version_string="1.01"><![CDATA[Title]]></phrase>
+    <phrase title="VietXfAdvStats_section_users_new" version_id="1" version_string="1.01"><![CDATA[New Members]]></phrase>
+    <phrase title="VietXfAdvStats_section_users_top_earned_in_day" version_id="2" version_string="1.3.0"><![CDATA[Top Earned In Day]]></phrase>
+    <phrase title="VietXfAdvStats_section_users_top_liked" version_id="1" version_string="1.01"><![CDATA[Top Liked]]></phrase>
+    <phrase title="VietXfAdvStats_section_users_top_poorest" version_id="2" version_string="1.3.0"><![CDATA[Top Poorest]]></phrase>
+    <phrase title="VietXfAdvStats_section_users_top_posters" version_id="1" version_string="1.01"><![CDATA[Top Posters]]></phrase>
+    <phrase title="VietXfAdvStats_section_users_top_richest" version_id="0" version_string=""><![CDATA[Top Richest]]></phrase>
+    <phrase title="VietXfAdvStats_section_users_top_spent_in_day" version_id="1" version_string="1.0.0"><![CDATA[Top Spent In Day]]></phrase>
+    <phrase title="VietXfAdvStats_section_users_top_starters" version_id="1" version_string="1.01"><![CDATA[Top Starters]]></phrase>
+    <phrase title="VietXfAdvStats_section_users_top_trophy_points" version_id="1" version_string="1.01"><![CDATA[Top Trophy Points]]></phrase>
+    <phrase title="VietXfAdvStats_update_interval" version_id="1" version_string="1.01"><![CDATA[Update Interval (in seconds)]]></phrase>
+  </phrases>
+  <route_prefixes>
+    <route_type type="public">
+      <prefix original_prefix="advstats" class="VietXfAdvStats_Route_Prefix_AdvStats" build_link="none"/>
+    </route_type>
+  </route_prefixes>
+  <style_properties>
+    <property property_name="VietXfAdvStats_Block1stWidth" property_type="scalar" definition="1" group_name="VietXfAdvStats" title="First Block's Width" description="" css_components="" scalar_type="number" scalar_parameters="" display_order="10" sub_group="Primary"><![CDATA[210px]]></property>
+    <property property_name="VietXfAdvStats_ThreadTitleWidth" property_type="scalar" definition="1" group_name="VietXfAdvStats" title="Thread Title's Width" description="You can use 0 to let the width grow as much as possible." css_components="" scalar_type="number" scalar_parameters="" display_order="10" sub_group="Threads"><![CDATA[0]]></property>
+    <property property_name="VietXfAdvStats_ThreadTitleChars" property_type="scalar" definition="1" group_name="VietXfAdvStats" title="Thread Title's Characters" description="Specify the maximum number of characters for thread title. It will be truncated if the title is longer that this value. You can use 0 to disable this feature." css_components="" scalar_type="number" scalar_parameters="" display_order="20" sub_group="Threads"><![CDATA[52]]></property>
+    <property property_name="VietXfAdvStats_ThreadInfoWidth" property_type="scalar" definition="1" group_name="VietXfAdvStats" title="Thread Info's Width" description="Thread Info column will contain different data depends on the type of the section. You can use 0 to let the width grow as much as possible." css_components="" scalar_type="number" scalar_parameters="" display_order="30" sub_group="Threads"><![CDATA[86px]]></property>
+    <property property_name="VietXfAdvStats_SectionItemTitleCss" property_type="css" definition="1" group_name="VietXfAdvStats" title="Item Title" description="" css_components="text,background,border,layout,extra" scalar_type="" scalar_parameters="" display_order="10" sub_group=""><![CDATA[[]]]></property>
+    <property property_name="VietXfAdvStats_SectionItemInfoCss" property_type="css" definition="1" group_name="VietXfAdvStats" title="Item Info" description="" css_components="text,background,border,layout,extra" scalar_type="" scalar_parameters="" display_order="20" sub_group=""><![CDATA[{"extra":"text-align: right;","font-size":"11px"}]]></property>
+    <property property_name="VietXfAdvStats_UserNameWidth" property_type="scalar" definition="1" group_name="VietXfAdvStats" title="Username's Width" description="You can use 0 to let the width grow as much as possible." css_components="" scalar_type="number" scalar_parameters="" display_order="10" sub_group="Users"><![CDATA[0]]></property>
+    <property property_name="VietXfAdvStats_UserNameChars" property_type="scalar" definition="1" group_name="VietXfAdvStats" title="Username's Characters" description="Specify the maximum number of characters for username. It will be truncated if the name is longer that this value. You can use 0 to disable this feature." css_components="" scalar_type="number" scalar_parameters="" display_order="20" sub_group="Users"><![CDATA[15]]></property>
+    <property property_name="VietXfAdvStats_UserInfoWidth" property_type="scalar" definition="1" group_name="VietXfAdvStats" title="User Info's Width" description="User Info column will contain different data depends on the type of the section. You can use 0 to let the width grow as much as possible." css_components="" scalar_type="number" scalar_parameters="" display_order="30" sub_group="Users"><![CDATA[65px]]></property>
+    <property property_name="VietXfAdvStats_ThreadInfoUserNameChars" property_type="scalar" definition="1" group_name="VietXfAdvStats" title="Username's Characters" description="Sometimes thread info will display username of a user. You can specify the maximum number of characters for username here. It will be truncated if the name is longer that this value. You can use 0 to disable this feature." css_components="" scalar_type="number" scalar_parameters="" display_order="40" sub_group="Threads"><![CDATA[15]]></property>
+    <group group_name="VietXfAdvStats" display_order="9999">
+      <title>VietXF - Advanced Forum Statistics</title>
+      <description></description>
+    </group>
+  </style_properties>
+  <templates>
+    <template title="VietXfAdvStats.css" version_id="1" version_string="1.01"><![CDATA[.VietXfAdvStats {
+}
+
+	.VietXfAdvStats h3 {
+		{xen:property subHeading}
+		
+		{xen:property categoryStrip}
+		
+		margin-bottom: 5px;
+	}
+	
+		.VietXfAdvStats h3 .VietXfAdvStats_Header {
+			{xen:property categoryStripTitle}
+		}
+		
+		.VietXfAdvStats h3 .VietXfAdvStats_Controls {
+			float: right;
+			font-size: {xen:property categoryStripTitle.font-size};
+		}
+
+			.VietXfAdvStats h3 .VietXfAdvStats_Controls select {
+				margin-top: -3px;
+			}
+
+	#Block1st {
+		float: left;
+		width: {xen:property VietXfAdvStats_Block1stWidth};
+	}
+	
+	#Block2nd {
+		margin-left: {xen:calc '{xen:property VietXfAdvStats_Block1stWidth} + 5'}px;
+	}
+	
+		#Block1stPanes,
+		#Block2ndPanes {
+			border-left: 1px solid {xen:property primaryLighter};
+			border-right: 1px solid {xen:property primaryLighter};
+			border-bottom: 1px solid {xen:property primaryLighter};
+			padding-bottom: 5px;
+		}
+	
+		#Block1st .VietXfAdvStats_Block1stContent {
+            padding-left: 25px;
+			padding-right: 5px;
+            line-height: 14px;
+        }
+		#Block2nd .VietXfAdvStats_Block2ndContent {
+			padding-left: 5px;
+			padding-right: 5px;
+            line-height: 14px;
+                        
+		}
+        #Block1st .VietXfAdvStats_Block1stContent{
+            background: url(styles/default/xenforo/list.gif) no-repeat top left;
+        }
+	
+.VietXfAdvStats_Section {
+	position: relative;
+	zoom: 1;
+}
+
+	.VietXfAdvStats_SectionItem {
+		display: table;
+		table-layout: fixed;
+		width: 100%;
+		word-wrap: normal;
+		padding-top: 3px;
+		padding-bottom: 3px;
+	}
+	
+		.VietXfAdvStats_SectionItem .VietXfAdvStats_SectionItemBlock {
+			display: table-cell;
+			vertical-align: middle;
+		}
+	
+	.VietXfAdvStats_SectionItem .VietXfAdvStats_SectionItemTitle {
+		{xen:property VietXfAdvStats_SectionItemTitleCss}
+	}
+
+	.VietXfAdvStats_SectionItem .VietXfAdvStats_SectionItemInfo {
+		{xen:property VietXfAdvStats_SectionItemInfoCss}
+	}
+
+/** IE <8 **/
+.VietXfAdvStats_SectionItem                              { *display: block; _vertical-align: bottom; }
+.VietXfAdvStats_SectionItem .listBlock                   { *display: block; *float: left; }
+.VietXfAdvStats_SectionItem .listBlock                   { _height: 52px; *min-height: 52px; } /* todo: should be calculation */
+.VietXfAdvStats_Section .VietXfAdvStats_SectionItemTitle { *width: 69.98%; }
+.VietXfAdvStats_Section .VietXfAdvStats_SectionItemInfo  { *width: 29.98%; }
+
+.VietXfAdvStats_SectionItem {
+	background-color: {xen:property contentBackground};
+	background: url('styles/default/xenforo/listbg.gif') repeat;
+}
+
+/** USERS SECTION */
+.VietXfAdvStats_User {
+}
+	
+	.VietXfAdvStats_User .VietXfAdvStats_SectionItemTitle {
+		width: {xen:if '{xen:calc '{xen:property VietXfAdvStats_UserNameWidth}'} > 0', '{xen:property VietXfAdvStats_UserNameWidth}', 'auto'};
+	}
+	
+	.VietXfAdvStats_User .VietXfAdvStats_SectionItemInfo {
+		width: {xen:if '{xen:calc '{xen:property VietXfAdvStats_UserInfoWidth}'} > 0', '{xen:property VietXfAdvStats_UserInfoWidth}', 'auto'};
+	}
+
+/** THREADS SECTION */
+.VietXfAdvStats_Thread {
+}
+
+	.VietXfAdvStats_Thread .VietXfAdvStats_ThreadTitle.new a {
+		font-weight: bold;
+	}
+	
+	.VietXfAdvStats_Thread .VietXfAdvStats_SectionItemTitle {
+		width: {xen:if '{xen:calc '{xen:property VietXfAdvStats_ThreadTitleWidth}'} > 0', '{xen:property VietXfAdvStats_ThreadTitleWidth}', 'auto'};
+	}
+	
+	.VietXfAdvStats_Thread .VietXfAdvStats_SectionItemInfo {
+		width: {xen:if '{xen:calc '{xen:property VietXfAdvStats_ThreadInfoWidth}'} > 0', '{xen:property VietXfAdvStats_ThreadInfoWidth}', 'auto'};
+	}]]></template>
+    <template title="VietXfAdvStats_threads" version_id="2" version_string="1.01"><![CDATA[<xen:require css="VietXfAdvStats.css" />
+
+<div class="this-is-a-wrapper-to-activate-our-js-correctly">
+	<div class="VietXfAdvStats_Section VietXfAdvStats_Threads" data-typeMajor="threads" data-type="{$requested.type}" data-requestedAction="{$requested.action}" data-requestedParams="{$requested.params}">
+		<xen:foreach loop="$threadsPrepared" value="$prepared">
+			{xen:raw {$prepared}}
+		</xen:foreach>
+	</div>
+</div>]]></template>
+    <template title="VietxfAdvStats_threads_hot" version_id="2" version_string="1.01"><![CDATA[<div class="VietXfAdvStats_SectionItem VietXfAdvStats_Thread">
+	<div class="VietXfAdvStats_SectionItemBlock VietXfAdvStats_SectionItemTitle VietXfAdvStats_ThreadTitle">
+		
+		<xen:if is="{$thread.isNew}">
+		<img src="styles/default/xenforo/post_new.gif">
+		</a>
+		<xen:else />
+		<img src="styles/default/xenforo/post_old.gif">		
+		</xen:if>
+		<xen:if is="{$thread.prefix_id}">
+			<xen:if is="{$linkPrefix}">
+				<a href="{xen:link forums, $forum, 'prefix_id={$thread.prefix_id}'}" class="prefixLink"
+					title="{xen:phrase show_only_threads_prefixed_by_x, 'prefix={xen:helper threadPrefix, $thread, plain, ""}'}">{xen:helper threadPrefix, $thread, html, ''}</a>
+			<xen:else />
+				{xen:helper threadPrefix, $thread}
+			</xen:if>
+		</xen:if>
+		<a href="{xen:link '{xen:if '{$thread.isNew}', 'threads/unread', 'threads'}', {$thread}}" class="{xen:if $thread.hasPreview, PreviewTooltip}" 
+			data-previewUrl="{xen:if $thread.hasPreview, {xen:link threads/preview, $thread}}">
+			<xen:if is="{xen:property VietXfAdvStats_ThreadTitleChars} > 0">
+				{xen:helper wordtrim, {$thread.title}, {xen:property VietXfAdvStats_ThreadTitleChars}}
+			<xen:else />
+				{$thread.title}
+			</xen:if>
+		</a>
+	</div>
+	<div class="VietXfAdvStats_SectionItemBlock VietXfAdvStats_SectionItemInfo VietXfAdvStats_ThreadViewCount">
+		{xen:number {$thread.view_count}}
+		{xen:if '{$thread.view_count} == 1', '{xen:phrase VietXfAdvStats_lowercase_view}', '{xen:phrase VietXfAdvStats_lowercase_views}'}
+	</div>
+</div>]]></template>
+    <template title="VietxfAdvStats_threads_latest" version_id="2" version_string="1.01"><![CDATA[
+<div class="VietXfAdvStats_SectionItem VietXfAdvStats_Thread">
+	<div class="VietXfAdvStats_SectionItemBlock VietXfAdvStats_SectionItemTitle VietXfAdvStats_ThreadTitle">
+		<xen:if is="{$thread.isNew}">
+		<img src="styles/default/xenforo/post_new.gif">
+		</a>
+		<xen:else />		
+		<img src="styles/default/xenforo/post_old.gif">		
+		</xen:if>
+		<xen:if is="{$thread.prefix_id}">
+			<xen:if is="{$linkPrefix}">
+				<a href="{xen:link forums, $forum, 'prefix_id={$thread.prefix_id}'}" class="prefixLink"
+					title="{xen:phrase show_only_threads_prefixed_by_x, 'prefix={xen:helper threadPrefix, $thread, plain, ""}'}">{xen:helper threadPrefix, $thread, html, ''}</a>
+			<xen:else />
+				{xen:helper threadPrefix, $thread}
+			</xen:if>
+		</xen:if>
+		<a href="{xen:link '{xen:if '{$thread.isNew}', 'threads/unread', 'threads'}', {$thread}}" class="{xen:if $thread.hasPreview, PreviewTooltip}" 
+			data-previewUrl="{xen:if $thread.hasPreview, {xen:link threads/preview, $thread}}">
+			<xen:if is="{xen:property VietXfAdvStats_ThreadTitleChars} > 0">
+				{xen:helper wordtrim, {$thread.title}, {xen:property VietXfAdvStats_ThreadTitleChars}}
+			<xen:else />
+				{$thread.title}
+			</xen:if>
+		</a>
+	</div>
+	<div class="VietXfAdvStats_SectionItemBlock VietXfAdvStats_SectionItemInfo VietXfAdvStats_ThreadLastPoster">
+		<xen:username user="$thread" rich="true" />
+	</div>
+</div>
+]]></template>
+    <template title="VietxfAdvStats_threads_random" version_id="2" version_string="1.1.0"><![CDATA[<div class="VietXfAdvStats_SectionItem VietXfAdvStats_Thread">
+	<div class="VietXfAdvStats_SectionItemBlock VietXfAdvStats_SectionItemTitle VietXfAdvStats_ThreadTitle">
+		<xen:if is="{$thread.isNew}">
+		<img src="styles/default/xenforo/post_new.gif">
+		</a>
+		<xen:else />		
+		<img src="styles/default/xenforo/post_old.gif">		
+		</xen:if>
+		<xen:if is="{$thread.prefix_id}">
+			<xen:if is="{$linkPrefix}">
+				<a href="{xen:link forums, $forum, 'prefix_id={$thread.prefix_id}'}" class="prefixLink"
+					title="{xen:phrase show_only_threads_prefixed_by_x, 'prefix={xen:helper threadPrefix, $thread, plain, ""}'}">{xen:helper threadPrefix, $thread, html, ''}</a>
+			<xen:else />
+				{xen:helper threadPrefix, $thread}
+			</xen:if>
+		</xen:if>
+		<a href="{xen:link '{xen:if '{$thread.isNew}', 'threads/unread', 'threads'}', {$thread}}" class="{xen:if $thread.hasPreview, PreviewTooltip}" 
+			data-previewUrl="{xen:if $thread.hasPreview, {xen:link threads/preview, $thread}}">
+			<xen:if is="{xen:property VietXfAdvStats_ThreadTitleChars} > 0">
+				{xen:helper wordtrim, {$thread.title}, {xen:property VietXfAdvStats_ThreadTitleChars}}
+			<xen:else />
+				{$thread.title}
+			</xen:if>
+		</a>
+	</div>
+	<div class="VietXfAdvStats_SectionItemBlock VietXfAdvStats_SectionItemInfo VietXfAdvStats_ThreadLastPoster">
+		<xen:username user="$thread" rich="true" />
+	</div>
+</div>
+]]></template>
+    <template title="VietxfAdvStats_threads_recent" version_id="2" version_string="1.01"><![CDATA[<div class="VietXfAdvStats_SectionItem VietXfAdvStats_Thread">
+	<div class="VietXfAdvStats_SectionItemBlock VietXfAdvStats_SectionItemTitle VietXfAdvStats_ThreadTitle">
+		
+		<xen:if is="{$thread.isNew}">
+		<img src="styles/default/xenforo/post_new.gif">		
+		<xen:else />
+		<img src="styles/default/xenforo/post_old.gif">
+		</xen:if>
+		<xen:if is="{$thread.prefix_id}">
+			<xen:if is="{$linkPrefix}">
+				<a href="{xen:link forums, $forum, 'prefix_id={$thread.prefix_id}'}" class="prefixLink"
+					title="{xen:phrase show_only_threads_prefixed_by_x, 'prefix={xen:helper threadPrefix, $thread, plain, ""}'}">{xen:helper threadPrefix, $thread, html, ''}</a>
+			<xen:else />
+				{xen:helper threadPrefix, $thread}
+			</xen:if>
+		</xen:if>
+		<a href="{xen:link '{xen:if '{$thread.isNew}', 'threads/unread', 'threads'}', {$thread}}" class="{xen:if $thread.hasPreview, PreviewTooltip}" 
+			data-previewUrl="{xen:if $thread.hasPreview, {xen:link threads/preview, $thread}}">
+			<xen:if is="{xen:property VietXfAdvStats_ThreadTitleChars} > 0">
+				{xen:helper wordtrim, {$thread.title}, {xen:property VietXfAdvStats_ThreadTitleChars}}
+			<xen:else />
+				{$thread.title}
+			</xen:if>
+		</a>
+	</div>
+	<div class="VietXfAdvStats_SectionItemBlock VietXfAdvStats_SectionItemInfo VietXfAdvStats_ThreadPoster">
+		<xen:username user="$thread" rich="true" />
+	</div>
+</div>]]></template>
+    <template title="VietXfAdvStats_users" version_id="1" version_string="1.01"><![CDATA[<xen:require css="VietXfAdvStats.css" />
+
+<div class="this-is-a-wrapper-to-activate-our-js-correctly">
+	<div class="VietXfAdvStats_Section VietXfAdvStats_Users" data-typeMajor="users" data-type="{$requested.type}" data-requestedAction="{$requested.action}" data-requestedParams="{$requested.params}">
+		<xen:foreach loop="$usersPrepared" value="$prepared">
+			{xen:raw {$prepared}}
+		</xen:foreach>
+	</div>
+</div>]]></template>
+    <template title="VietxfAdvStats_users_new" version_id="1" version_string="1.01"><![CDATA[<div class="VietXfAdvStats_SectionItem VietXfAdvStats_User">
+	<div class="VietXfAdvStats_SectionItemBlock VietXfAdvStats_SectionItemTitle VietXfAdvStats_UserName">
+		<xen:username user="$user" rich="true" />
+	</div>
+	<div class="VietXfAdvStats_SectionItemBlock VietXfAdvStats_SectionItemInfo VietXfAdvStats_UserRegisterDate">
+		{xen:date {$user.register_date}}
+	</div>
+</div>]]></template>
+    <template title="VietxfAdvStats_users_top_earned_in_day" version_id="2" version_string="1.3.0"><![CDATA[<div class="VietXfAdvStats_SectionItem VietXfAdvStats_User">
+	<div class="VietXfAdvStats_SectionItemBlock VietXfAdvStats_SectionItemTitle VietXfAdvStats_UserName">
+		<xen:username user="$user" rich="true" />
+	</div>
+	<div class="VietXfAdvStats_SectionItemBlock VietXfAdvStats_SectionItemInfo VietXfAdvStats_UserTrophyPoints">
+		{xen:helper brc_currencyformat,{$user.credits},true }
+	</div>
+</div>]]></template>
+    <template title="VietxfAdvStats_users_top_liked" version_id="1" version_string="1.01"><![CDATA[<div class="VietXfAdvStats_SectionItem VietXfAdvStats_User">
+	<div class="VietXfAdvStats_SectionItemBlock VietXfAdvStats_SectionItemTitle VietXfAdvStats_UserName">
+		<xen:username user="$user" rich="true" />
+	</div>
+	<div class="VietXfAdvStats_SectionItemBlock VietXfAdvStats_SectionItemInfo VietXfAdvStats_UserLikeCount">
+		{xen:number {$user.like_count}}
+	</div>
+</div>]]></template>
+    <template title="VietxfAdvStats_users_top_poorest" version_id="2" version_string="1.3.0"><![CDATA[<div class="VietXfAdvStats_SectionItem VietXfAdvStats_User">
+	<div class="VietXfAdvStats_SectionItemBlock VietXfAdvStats_SectionItemTitle VietXfAdvStats_UserName">
+		<xen:username user="$user" rich="true" />
+	</div>
+	<div class="VietXfAdvStats_SectionItemBlock VietXfAdvStats_SectionItemInfo VietXfAdvStats_UserTrophyPoints">
+		{xen:helper brc_currencyformat,{$user.credits},true }
+	</div>
+</div>]]></template>
+    <template title="VietxfAdvStats_users_top_posters" version_id="1" version_string="1.01"><![CDATA[<div class="VietXfAdvStats_SectionItem VietXfAdvStats_User">
+	<div class="VietXfAdvStats_SectionItemBlock VietXfAdvStats_SectionItemTitle VietXfAdvStats_UserName">
+		<xen:username user="$user" rich="true" />
+	</div>
+	<div class="VietXfAdvStats_SectionItemBlock VietXfAdvStats_SectionItemInfo VietXfAdvStats_UserMessageCount">
+		{xen:number {$user.message_count}}
+	</div>
+</div>]]></template>
+    <template title="VietxfAdvStats_users_top_richest" version_id="1" version_string="1.0.0"><![CDATA[<div class="VietXfAdvStats_SectionItem VietXfAdvStats_User">
+	<div class="VietXfAdvStats_SectionItemBlock VietXfAdvStats_SectionItemTitle VietXfAdvStats_UserName">
+		<xen:username user="$user" rich="true" />
+	</div>
+	<div class="VietXfAdvStats_SectionItemBlock VietXfAdvStats_SectionItemInfo VietXfAdvStats_UserTrophyPoints">
+		{xen:helper brc_currencyformat,{$user.credits},true }
+	</div>
+</div>]]></template>
+    <template title="VietxfAdvStats_users_top_spent_in_day" version_id="2" version_string="1.3.0"><![CDATA[<div class="VietXfAdvStats_SectionItem VietXfAdvStats_User">
+	<div class="VietXfAdvStats_SectionItemBlock VietXfAdvStats_SectionItemTitle VietXfAdvStats_UserName">
+		<xen:username user="$user" rich="true" />
+	</div>
+	<div class="VietXfAdvStats_SectionItemBlock VietXfAdvStats_SectionItemInfo VietXfAdvStats_UserTrophyPoints">
+		{xen:helper brc_currencyformat,{$user.credits},true }
+	</div>
+</div>]]></template>
+    <template title="VietxfAdvStats_users_top_trophy_points" version_id="1" version_string="1.01"><![CDATA[<div class="VietXfAdvStats_SectionItem VietXfAdvStats_User">
+	<div class="VietXfAdvStats_SectionItemBlock VietXfAdvStats_SectionItemTitle VietXfAdvStats_UserName">
+		<xen:username user="$user" rich="true" />
+	</div>
+	<div class="VietXfAdvStats_SectionItemBlock VietXfAdvStats_SectionItemInfo VietXfAdvStats_UserTrophyPoints">
+		{xen:number {$user.trophy_points}}
+	</div>
+</div>]]></template>
+    <template title="VietXfAdvStats_wrapper" version_id="2" version_string="1.01"><![CDATA[<xen:require js="js/VietXfAdvStats/frontend.js" />
+<xen:require css="VietXfAdvStats.css" />
+
+<div class="VietXfAdvStats sectionMain" data-bulkUpdateUrl="{$bulkUpdateUrl}">
+	<h3>
+		<div class="VietXfAdvStats_Controls">
+			<xen:if is="{xen:count {$itemLimits}} > 1">
+				<select class="VietXfAdvStats_ItemLimit Tooltip" title="{xen:phrase VietXfAdvStats_item_limit}">
+					<xen:foreach loop="$itemLimits" value="$itemLimitValue">
+						<option value="{$itemLimitValue}" {xen:selected '{$itemLimitValue} == {$itemLimit}'}>{xen:number {$itemLimitValue}}</option>
+					</xen:foreach>
+				</select>
+			<xen:else />
+				<input type="hidden" value="{$itemLimit}" class="VietXfAdvStats_ItemLimit" />
+			</xen:if>
+			
+			<xen:if is="{xen:count {$updateIntervals}} > 1">
+				<select class="VietXfAdvStats_updateInterval Tooltip" title="{xen:phrase VietXfAdvStats_update_interval}">
+					<xen:foreach loop="$updateIntervals" value="$updateIntervalValue">
+						<option value="{$updateIntervalValue}" {xen:selected '{$updateIntervalValue} == {$updateInterval}'}>{xen:number {$updateIntervalValue}}</option>
+					</xen:foreach>
+				</select>
+			<xen:else />
+				<input type="hidden" value="{$updateInterval}" class="VietXfAdvStats_updateInterval" />
+			</xen:if>
+		</div>
+		
+		<xen:if is="{$backLink}">
+			<a href="{$backLink}" class="VietXfAdvStats_Header" target="_blank">{xen:phrase VietXfAdvStats}</a>
+		<xen:else />
+			<div class="VietXfAdvStats_Header">{xen:phrase VietXfAdvStats}</div>
+		</xen:if>
+	</h3>
+	
+	<div id="Block1st">
+		<ul class="tabs noLinks">
+			<li class="active">
+				<select class="VietXfAdvStats_SectionTrigger" data-panes="#Block1stPanes > li">
+					<xen:foreach loop="$sections1st" value="$section">
+						<option value="{$section.section_id}">{$section.section_title}</option>
+					</xen:foreach>
+				</select>
+			</li>
+		</ul>
+		<ul id="Block1stPanes">
+			<xen:foreach loop="$sections1st" value="$section">
+				<xen:include template="VietXfAdvStats_wrapper_section_li">
+					<xen:set var="$liClass">VietXfAdvStats_Block1stContent</xen:set>
+				</xen:include>
+			</xen:foreach>
+		</ul>
+	</div>
+	<div id="Block2nd">
+		<ul class="tabs VietXfAdvStats_SectionTrigger" data-panes="#Block2ndPanes > li">
+			<xen:foreach loop="$sections2nd" value="$section">
+				<li><a href="{$requestPaths.requestUri}#{$section.section_id}">{$section.section_title}</a></li>
+			</xen:foreach>
+		</ul>
+		<ul id="Block2ndPanes">
+			<xen:foreach loop="$sections2nd" value="$section">
+				<xen:include template="VietXfAdvStats_wrapper_section_li">
+					<xen:set var="$liClass">VietXfAdvStats_Block2ndContent</xen:set>
+				</xen:include>
+			</xen:foreach>
+		</ul>
+	</div>
+	<div style="clear: both; height: 0px;">&nbsp;</div>
+</div>
+
+<xen:include template="preview_tooltip" />]]></template>
+    <template title="VietXfAdvStats_wrapper_section_li" version_id="1" version_string="1.01"><![CDATA[<xen:if is="{$section.rendered}">
+	<li id="{$section.section_id}" class="VietXfAdvStats_BlockContent {$liClass}">
+		{xen:raw {$section.rendered}}
+	</li>
+<xen:else />
+	<li id="{$section.section_id}" class="VietXfAdvStats_BlockContent {$liClass}" data-loadUrl="{$section.section_link}">
+		{xen:phrase loading}...
+		<noscript><a href="{$section.section_link}'}">{xen:phrase view}</a></noscript>
+	</li>
+</xen:if>]]></template>
+  </templates>
+  <bb_code_media_sites/>
+  <brc_actions/>
+</addon>

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<searchspiders>
+  <spider ident="archive.org_bot">
+    <name>Internet Archive</name>
+    <info>http://www.archive.org/details/archive.org_bot</info>
+  </spider>
+  <spider ident="baiduspider">
+    <name>Baidu</name>
+    <info>http://www.baidu.com/search/spider.htm</info>
+  </spider>
+  <spider ident="bingbot">
+    <name>Bing</name>
+    <info>http://www.bing.com/bingbot.htm</info>
+  </spider>
+  <spider ident="facebookexternalhit">
+    <name>Facebook</name>
+    <info>http://www.facebook.com/externalhit_uatext.php</info>
+  </spider>
+  <spider ident="googlebot">
+    <name>Google</name>
+    <info>https://support.google.com/webmasters/answer/182072</info>
+  </spider>
+  <spider ident="ia_archiver">
+    <name>Alexa</name>
+    <info>http://www.alexa.com/help/webmasters</info>
+  </spider>
+  <spider ident="magpie-crawler">
+    <name>Brandwatch</name>
+    <info>http://www.brandwatch.com/how-it-works/gathering-data/</info>
+  </spider>
+  <spider ident="mediapartners-google">
+    <name>Google AdSense</name>
+    <info>https://support.google.com/webmasters/answer/182072</info>
+  </spider>
+  <spider ident="mj12bot">
+    <name>Majestic-12</name>
+    <info>http://majestic12.co.uk/bot.php</info>
+  </spider>
+  <spider ident="msnbot">
+    <name>MSN</name>
+    <info>http://search.msn.com/msnbot.htm</info>
+  </spider>
+  <spider ident="proximic">
+    <name>Proximic</name>
+    <info>http://www.proximic.com/info/spider.php</info>
+  </spider>
+  <spider ident="sogou web spider">
+    <name>Sogou</name>
+    <info>http://www.sogou.com/docs/help/webmasters.htm#07</info>
+  </spider>
+  <spider ident="scoutjet">
+    <name>Blekko</name>
+    <info>http://www.scoutjet.com/</info>
+  </spider>
+  <spider ident="yahoo! slurp">
+    <name>Yahoo</name>
+    <info>http://help.yahoo.com/help/us/ysearch/slurp</info>
+  </spider>
+  <spider ident="yandex">
+    <name>Yandex</name>
+    <info>http://help.yandex.com/search/?id=1112030</info>
+  </spider>
+</searchspiders>

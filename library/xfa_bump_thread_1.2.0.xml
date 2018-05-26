@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<addon addon_id="xfa_bump_thread" title="XFA - Bump Thread" version_string="1.2.0" version_id="120" url="" install_callback_class="XfAddOns_BumpThread_Install_Install" install_callback_method="install" uninstall_callback_class="XfAddOns_BumpThread_Install_Install" uninstall_callback_method="uninstall">
+  <admin_navigation/>
+  <admin_permissions/>
+  <admin_style_properties/>
+  <admin_templates/>
+  <admin_template_modifications/>
+  <code_events/>
+  <code_event_listeners>
+    <listener event_id="load_class_controller" execute_order="10" callback_class="XfAddOns_BumpThread_Listener" callback_method="loadController" active="1" hint="" description="Controller that implements the bump option"/>
+    <listener event_id="load_class_model" execute_order="10" callback_class="XfAddOns_BumpThread_Listener" callback_method="loadModel" active="1" hint="" description="Extends XenForo models"/>
+    <listener event_id="template_create" execute_order="10" callback_class="XfAddOns_BumpThread_Template_Hook" callback_method="templateCreate" active="1" hint="" description="Preload templates"/>
+  </code_event_listeners>
+  <cron/>
+  <email_templates/>
+  <email_template_modifications/>
+  <optiongroups/>
+  <permissions>
+    <permission_groups/>
+    <permissions>
+      <permission permission_group_id="forum" permission_id="xfa_bump_thread" permission_type="flag" default_value="unset" interface_group_id="forumModeratorPermissions" display_order="1200"/>
+      <permission permission_group_id="forum" permission_id="xfa_bump_thread_any" permission_type="flag" default_value="unset" interface_group_id="forumModeratorPermissions" display_order="1205"/>
+      <permission permission_group_id="forum" permission_id="xfa_bump_thread_time" permission_type="integer" default_value_int="0" interface_group_id="forumModeratorPermissions" display_order="1400"/>
+      <permission permission_group_id="forum" permission_id="xfa_bump_threads_total" permission_type="integer" default_value_int="0" interface_group_id="forumModeratorPermissions" display_order="1410"/>
+    </permissions>
+    <interface_groups/>
+  </permissions>
+  <phrases>
+    <phrase title="moderator_log_thread_bump" version_id="120" version_string="1.2.0"><![CDATA[Thread bumped]]></phrase>
+    <phrase title="permission_forum_xfa_bump_thread" version_id="101" version_string="1.0.1"><![CDATA[Can bump own threads]]></phrase>
+    <phrase title="permission_forum_xfa_bump_threads_total" version_id="110" version_string="1.1.0"><![CDATA[Max threads that can be bumped]]></phrase>
+    <phrase title="permission_forum_xfa_bump_thread_any" version_id="101" version_string="1.0.1"><![CDATA[Can bump any thread]]></phrase>
+    <phrase title="permission_forum_xfa_bump_thread_time" version_id="102" version_string="1.0.2"><![CDATA[Time between bumping a thread (minutes)]]></phrase>
+    <phrase title="xfa_bump_thread_bump" version_id="100" version_string="1.0.0"><![CDATA[Bump]]></phrase>
+    <phrase title="xfa_bump_thread_has_been_bumped" version_id="100" version_string="1.0.0"><![CDATA[The thread has been bumped]]></phrase>
+    <phrase title="xfa_bump_thread_time_disallowed" version_id="120" version_string="1.2.0"><![CDATA[You cannot bump a thread yet, you need to wait {minutes} more minute(s) and {seconds} second(s) ]]></phrase>
+  </phrases>
+  <route_prefixes/>
+  <style_properties/>
+  <templates/>
+  <public_template_modifications>
+    <modification template="thread_list_item" modification_key="thread_list_item_xfa_b1" description="Add the option to bump a thread from the thread list" execution_order="10" enabled="1" action="preg_replace">
+      <find><![CDATA[#(<div class="controls faint">.*)(</div>)#isU]]></find>
+      <replace><![CDATA[$1
+	<xen:if is="{$thread.canBump}">
+		<a href="{xen:link threads/bump, $thread, 'from_list=1'}" class="Bump">{xen:phrase xfa_bump_thread_bump}</a>
+	</xen:if>
+$2]]></replace>
+    </modification>
+    <modification template="thread_view" modification_key="thread_view_xfa_b1" description="Add the option to bump a thread" execution_order="10" enabled="1" action="preg_replace">
+      <find><![CDATA[#<xen:if is="\{\$deletedPosts\}">.*</xen:if>#isU]]></find>
+      <replace><![CDATA[$0
+<xen:if is="{$thread.canBump}">
+	<li><a href="{xen:link threads/bump, $thread}" class="Bump">{xen:phrase xfa_bump_thread_bump}</a></li>
+</xen:if>]]></replace>
+    </modification>
+  </public_template_modifications>
+  <bb_code_media_sites/>
+  <bb_codes/>
+</addon>
